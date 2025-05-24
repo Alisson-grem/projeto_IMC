@@ -1,110 +1,88 @@
-import { StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import {  View, Text, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState } from 'react';
 
 export default function App() {
 
-  const[peso,setPeso] = useState('');
-  const[altura, setAltura] = useState('');
-  const[resultado, setResultado] = useState('');
+  const [nome, setNome] = useState('');
+  const [peso, setPeso] = useState('');
+  const [resultado, setResultado] = useState('');
+
+  const calcularAgua = () => {
+    const pesoNumerico = parseFloat(peso);
+    if (!nome || isNaN(pesoNumerico) || pesoNumerico <= 0) {
+      setResultado('Por favor, insira um nome e um peso válido.');
+      return;
+    }
+
+    const litros = (pesoNumerico * 0.035).toFixed(2);
+    setResultado(`${nome}, Você deve beber aproximadamente ${litros} litros de água por dia.`);
+  };
 
 
+   return (
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Text style={styles.title}>Calculadora de Consumo de Água</Text>
 
-  function calcularImc(){
-    let alturaEmMetro = parseFloat(altura) / 100;
-    let result = parseFloat(peso) / (alturaEmMetro * alturaEmMetro);
-
-
-    let msg ="";
-  if(result <18.5){
-    msg= " - Abaixo do Peso"
-  }   else if (result >=18.5 && result <= 24.99){
-    msg = "  - Peso Ideal: "
-  }
-  if(result >= 25 && result <= 29.99){
-    msg = " - Levemente acima do peso"
-  } else if (result >= 30 && result <= 34.99){
-    msg = " - Obesidade grau I"
-  }
-  if(result >= 35 && result <= 39.99){
-    msg =" - Obesidade grau II (severa)"
-  }else if (result > 40){
-    msg =" - Obesidade grau III (mórbida)"
-  }
-  setResultado ("Valor do IMC: "+result.toFixed(2)+""+msg);
-
-  }
-  return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}> IMC </Text>
-
-      <View style={styles.bloco}>
-        <Text style={styles.label}>Peso</Text>
-        <TextInput
+      <TextInput
         style={styles.input}
-        keyboardType='numeric'
-        onChangeText={(valor)=> setPeso(valor)}
-        />
-      </View>
+        placeholder="Digite seu nome"
+        value={nome}
+        onChangeText={setNome}
+      />
 
-      <View style={styles.bloco}>
-        <Text style={styles.label}>Altura</Text>
-        <TextInput
+      <TextInput
         style={styles.input}
-        keyboardType='numeric'
-        onChangeText={(valor)=> setAltura(valor)}
-        />
-      </View>
+        placeholder="Digite seu peso (kg)"
+        keyboardType="numeric"
+        value={peso}
+        onChangeText={setPeso}
+      />
 
-      <View style={styles.bloco}>
-        <TouchableOpacity style={styles.btn} onPress={calcularImc}>
-            <Text style={styles.btnTxt}>Calcular</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.bloco}>
-          <Text style={styles.label}>{resultado}</Text>
-      </View>
+      <Button title="Calcular Consumo de Água" onPress={calcularAgua} />
 
-    </View>
+      {resultado ? (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>{resultado}</Text>
+        </View>
+      ) : null}
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#afc',
+    backgroundColor: '#add',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
-  titulo:{
-    textAlign:'center',
-    fontSize:35,
-    marginTop:80
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    color: '#0D47A1',
   },
-  bloco:{
-    width:'100%',
-    marginTop:30
+  input: {
+    width: '50%',
+    borderColor: '#90CAF9',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    backgroundColor: '#FFFFFF',
   },
-  label:{
-  width:'80%',
-  fontSize:25,
-  marginLeft:'10%'
+  resultContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#BBDEFB',
+    borderRadius: 10,
   },
-  input:{
-    width:'80%',
-    fontSize:20,
-    marginLeft:'10%',
-    borderWidth:3,
-    borderRadius:20,
-    paddingLeft:10
+  resultText: {
+    fontSize: 18,
+    color: '#0D47A1',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
-  btn:{
-    width:'80%',
-    marginLeft:'10%',
-    backgroundColor:'#aaf',
-    borderWidth:2,
-    borderRadius:20
-  },
-  btnTxt:{
-    fontSize:30,
-    color:"#FFF",
-    textAlign:'center'
-  }
 });
